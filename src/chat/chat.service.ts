@@ -1,13 +1,16 @@
-import { GoogleGenAI } from '@google/genai/web';
-import { Injectable } from '@nestjs/common';
+import type { GoogleGenAI } from '@google/genai';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class ChatService {
+export class ChatService implements OnModuleInit {
     private history: any[] = [];
-    private ai: GoogleGenAI;
+    private ai!: GoogleGenAI;
 
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService) {}
+
+    async onModuleInit() {
+        const { GoogleGenAI } = await import('@google/genai');
         this.ai = new GoogleGenAI({
             apiKey: this.configService.get<string>('GEMINI_API_KEY'),
         });
